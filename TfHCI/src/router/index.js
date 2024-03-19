@@ -10,7 +10,8 @@ const routes = [
   { path: '/', component: Home }, // Define a route for the Home component
   { path: '/section1', component: TemperaturePage }, // Route section 1 to the TemperaturePage component
   {path: '/section2', component: phView},
-  {path: '/section4',component: Section4}
+  {path: '/section4',component: Section4},
+  {path: '/section3',component: Section3}
 ];
 
 

@@ -5,11 +5,16 @@
         <div class="inner-icon"></div>
       </div>
     </div>
-    <div class="temp-text">Temp</div>
     <div class="temperature-info">
-      <div class="temperature">
-        <div class="temp-value">{{ temperature }}°C</div>
-        <div class="temp-value">{{ fahrenheit }}°F</div>
+      <div class="temperature-values">
+        <div class="temperature-box">
+          <div class="temp-text">Temp (Celsius)</div>
+          <div class="temp-value">{{ temperature }}°C</div>
+        </div>
+        <div class="temperature-box">
+          <div class="temp-text">Temp (Fahrenheit)</div>
+          <div class="temp-value">{{ fahrenheit }}°F</div>
+        </div>
       </div>
       <div class="status">{{ temperatureStatus }}</div>
     </div>
@@ -28,32 +33,47 @@ export default {
     };
   },
   mounted() {
-    // Simulate reading temperature value from IoT device
-    this.readTemperatureValue();
+    this.fetchTemperatureData();
+    this.getBackgroundColor();
   },
   methods: {
-    readTemperatureValue() {
-      // Simulate reading temperature value from IoT device (replace with actual implementation)
-      // For demonstration purposes, generating a random temperature value between 1 and 100
-      const temperatureValue = Math.floor(Math.random() * 100) + 1;
-      this.temperature = temperatureValue;
-
-      // Determine background color and temperature status based on temperature value
-      if (temperatureValue <= 50) {
-        this.backgroundColor = '#2BBA4E'; // Green background for optimal temperature
-        this.isOptimalTemperature = true;
-        this.temperatureStatus = 'Optimal to go out';
-      } else {
-        this.backgroundColor = '#9E0000'; // Red background for high temperature
-        this.isOptimalTemperature = false;
-        this.temperatureStatus = 'Not optimal to go out';
+    async fetchTemperatureData() {
+      try {
+        const response = await fetch('http://localhost:3000/temperature');
+        const data = await response.json();
+        this.temperature = data.temperature;
+        this.fahrenheit = this.celsiusToFahrenheit(this.temperature); // Convert Celsius to Fahrenheit
+        // Set background color based on temperature value
+        this.backgroundColor = this.getBackgroundColor(this.temperature);
+        // Update icon and status based on temperature value
+        this.updateIconAndStatus();
+      } catch (error) {
+        console.error('Failed to fetch temperature data:', error);
       }
-
-      // Convert Celsius to Fahrenheit
-      this.fahrenheit = this.convertToCelsiusToFahrenheit(temperatureValue);
     },
-    convertToCelsiusToFahrenheit(celsius) {
-      return (celsius * 9/5) + 32;
+    getBackgroundColor(temperature) {
+      // Determine background color based on temperature value
+      if (temperature >= 1 && temperature <= 50) {
+        return '#2BBA4E'; // Green for optimal temperature
+      } else if (temperature > 50) {
+        return '#9E0000'; // Red for high temperature
+      } else {
+        return ''; // Default background color
+      }
+    },
+    updateIconAndStatus() {
+      // Update icon and status based on temperature value
+      if (this.temperature >= 1 && this.temperature <= 50) {
+        this.isOptimalTemperature = true;
+        this.temperatureStatus = 'Optimal temperature for going out';
+      } else {
+        this.isOptimalTemperature = false;
+        this.temperatureStatus = 'Non-optimal temperature for going out';
+      }
+    },
+    celsiusToFahrenheit(celsius) {
+      // Convert Celsius to Fahrenheit
+      return (celsius * 9 / 5) + 32;
     }
   }
 };
@@ -69,6 +89,7 @@ export default {
   align-items: center;
   padding: 20px;
   border-radius: 10px;
+  color: white;
   border: 2px solid #FFFFFF;
 }
 
@@ -100,6 +121,9 @@ export default {
 .cross::before {
   font-family: Arial, sans-serif;
   font-size: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Ensure vertical and horizontal alignment */
 }
 
 .tick::before {
@@ -123,9 +147,17 @@ export default {
   align-items: center;
 }
 
-.temperature {
+.temperature-values {
   display: flex;
-  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.temperature-box {
+  width: 200px;
+  border: 2px solid #FFFFFF;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 10px;
 }
 
 .temp-value {

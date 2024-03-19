@@ -1,28 +1,40 @@
 <template>
-    <div class="section" id="section3">
-      Section 3
+  <div class="safe-view">
+    <div class="success-symbol">✔️</div>
+    <div class="text-container">
+      <div class="safe-text">SAFE</div>
+      <div class="safe-message">All clear, no danger detected.</div>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    mounted() {
-      this.$emit('show-notification', 'Section 3 selected');
-    }
-  };
-  </script>
-  
-  <style scoped>
-  .section {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 2rem;
-    background-image: url('https://via.placeholder.com/1920x1080?text=Section+1');
-    background-size: cover;
-    background-position: center;
-  }
-  </style>
-  
+  </div>
+</template>
+
+<style scoped>
+.safe-view {
+  width: 100vw;
+  height: 100vh;
+  background-color: #2BBA4E; /* Green background color */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.success-symbol {
+  font-size: 50px;
+  color: #FFFFFF; /* White color for success symbol */
+  margin-bottom: 20px;
+}
+
+.safe-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.safe-message {
+  font-size: 18px;
+  color: white;
+  text-align: center;
+}
+</style>

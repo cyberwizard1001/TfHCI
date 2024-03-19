@@ -1,21 +1,22 @@
 <template>
   <div class="ph-view" :style="{ backgroundColor: backgroundColor }">
+    <!-- Display check or cross mark -->
     <div class="icon-container">
-      <div class="icon" :class="{ 'tick': isGoodForCrops, 'cross': !isGoodForCrops }">
+      <div class="icon" :class="{ 'tick': isOptimalpH, 'cross': !isOptimalpH }">
         <div class="inner-icon"></div>
       </div>
     </div>
-    <div class="info-container">
-      <div class="info">
-        <div class="label">pH</div>
-        <div class="value">{{ pHValue }}</div>
-      </div>
-      <div class="info">
-        <div class="label">Soil Type</div>
-        <div class="value">{{ soilType }}</div>
+    
+    <!-- Display pH info inside rounded rectangle -->
+    <div class="ph-info-container">
+      <div class="ph-info-box">
+        <div class="ph-heading">pH</div>
+        <div class="ph-value">{{ phValue }}</div>
       </div>
     </div>
-    <div class="status">{{ soilStatus }}</div>
+    
+    <!-- Display pH status -->
+    <div class="status">{{ pHStatus }}</div>
   </div>
 </template>
 
@@ -23,35 +24,47 @@
 export default {
   data() {
     return {
-      pHValue: null,
-      backgroundColor: '',
-      isGoodForCrops: false,
-      soilType: '',
-      soilStatus: ''
+      phValue: null,
+      soilType: null,
+      isOptimalpH: false, // Flag to indicate if pH is optimal
+      backgroundColor: '', // Initialize background color
+      pHStatus: ''
     };
   },
   mounted() {
-    // Simulate reading pH value from IoT device
-    this.readpHValue();
+    this.fetchPhData();
   },
   methods: {
-    readpHValue() {
-      // Simulate reading pH value from IoT device (replace with actual implementation)
-      // For demonstration purposes, generating a random pH value between 0 and 14
-      const pHValue = Math.floor(Math.random() * 15);
-      this.pHValue = pHValue;
-
-      // Determine background color and soil type based on pH value
-      if (pHValue >= 6 && pHValue <= 9) {
-        this.backgroundColor = '#2BBA4E'; // Green background for pH between 6 and 9
-        this.isGoodForCrops = true;
-        this.soilType = 'Neutral';
-        this.soilStatus = 'Good for growing crops';
+    async fetchPhData() {
+      try {
+        const response = await fetch('http://localhost:3000/ph');
+        const data = await response.json();
+        this.phValue = Math.round(data.phLevel / 100); // Divide by 100 and round to nearest integer
+        this.soilType = data.soilType;
+        // Set background color based on pH value
+        this.getBackgroundColor(this.phValue);
+        // Set pH status based on pH value
+        this.setPhStatus(this.phValue);
+      } catch (error) {
+        console.error('Failed to fetch pH data:', error);
+      }
+    },
+    getBackgroundColor(phValue) {
+      // Determine background color based on pH value
+      if (phValue >= 6 && phValue <= 9) {
+        this.backgroundColor = '#2BBA4E'; // Green for optimal pH
       } else {
-        this.backgroundColor = '#9E0000'; // Red background for pH below 6 or above 9
-        this.isGoodForCrops = false;
-        this.soilType = pHValue < 6 ? 'Acidic' : 'Alkali';
-        this.soilStatus = 'Not good for growing crops';
+        this.backgroundColor = '#9E0000'; // Red for non-optimal pH
+      }
+    },
+    setPhStatus(phValue) {
+      // Set pH status based on pH value
+      if (phValue >= 6 && phValue <= 9) {
+        this.pHStatus = 'Optimal pH for crop growth';
+        this.isOptimalpH = true;
+      } else {
+        this.pHStatus = 'Non-optimal pH for crop growth';
+        this.isOptimalpH = false;
       }
     }
   }
@@ -64,10 +77,9 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   padding: 20px;
-  border-radius: 10px;
 }
 
 .icon-container {
@@ -93,7 +105,6 @@ export default {
   height: 60px;
   border-radius: 50%;
 }
-
 .tick::before,
 .cross::before {
   font-family: Arial, sans-serif;
@@ -110,27 +121,37 @@ export default {
   color: #9E0000; /* Red color */
 }
 
-.info-container {
+.ph-info-container {
   margin-top: 20px;
+}
+
+
+.ph-info-box {
+  width: 100px; /* Adjust width as needed */
+  padding: 10px;
+  border-radius: 10px;
+  border: 2px solid white;
   display: flex;
-  justify-content: space-around;
-  width: 100%;
+  flex-direction: column;
+  align-items: center;
 }
 
-.info {
-  text-align: center;
-}
-
-.label {
-  font-size: 18px;
-}
-
-.value {
+.ph-heading {
   font-size: 24px;
+  text-align: center;
+  color: white; /* Make heading text white */
+}
+
+.ph-value {
+  font-size: 36px; /* Increase font size of pH value */
+  text-align: center;
+  color: white; /* Make pH value text white */
 }
 
 .status {
   margin-top: 20px;
   font-size: 18px;
+  text-align: center;
+  color: white; /* Make status text white */
 }
 </style>
