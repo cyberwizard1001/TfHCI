@@ -1,48 +1,44 @@
 <template>
-  <div class="danger-view">
-    <div class="warning-symbol">⚠️</div>
-    <div class="text-container">
-      <div class="danger-text">DANGER!!</div>
-      <div class="warning-message">Bombing detected, seek shelter!!</div>
-    </div>
+  <div>
+    <component :is="currentPage" />
   </div>
 </template>
 
-<style scoped>
+<script>
+import SafeView from './SafeView.vue'; // Import the SafeView component
+import DangerView from './DangerView.vue'; // Import the DangerView component
 
-template{
-  background-color: #9E0000;
-  margin: 0;
-  height: 100vh;
-  width: 100vw;
-}
+export default {
+  data() {
+    return {
+      noiseLevel: null,
+      currentPage: 'SafeView' // Define currentPage property
+    };
+  },
+  mounted() {
+    this.fetchNoiseLevel();
+  },
+  methods: {
+    async fetchNoiseLevel() {
+      try {
+        const response = await fetch('http://localhost:3000/noise');
+        const data = await response.json();
+        this.noiseLevel = data.noiseLevel;
 
-.danger-view {
-  width: 100vw;
-  height: 100vh;
-  background-color: #9E0000; /* Red background color */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.warning-symbol {
-  font-size: 50px;
-  color: #F7BF26; /* Orange color for warning symbol */
-  margin-bottom: 20px;
-}
-
-.danger-text {
-  font-size: 24px;
-  font-weight: bold;
-  color: white;
-  margin-bottom: 10px;
-}
-
-.warning-message {
-  font-size: 18px;
-  color: white;
-  text-align: center;
-}
-</style>
+        // Determine which page to display based on noise level
+        if (this.noiseLevel > 50) {
+          this.currentPage = 'DangerView'; // Display DangerView if noise level is high
+        } else {
+          this.currentPage = 'SafeView'; // Display SafeView if noise level is low
+        }
+      } catch (error) {
+        console.error('Failed to fetch noise level:', error);
+      }
+    }
+  },
+  components: {
+    SafeView, // Register the SafeView component
+    DangerView // Register the DangerView component
+  }
+};
+</script>

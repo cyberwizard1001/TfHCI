@@ -1,6 +1,7 @@
 import { Gpio } from 'onoff';
 import sensor from 'node-dht-sensor';
 import { SerialPort } from 'serialport'
+import {cors} from cors
 
 const lightInputPin = new Gpio(16, 'in');
 const dhtPin = 26;
