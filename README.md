@@ -94,7 +94,7 @@ Contributions are welcome! Feel free to open issues or submit pull requests to c
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
 
 ## Authors
-Nirmal Karthikeyan
-Michael Sherin 
-JiongYu Zhang
-Aditya Singh
+- Nirmal Karthikeyan
+- Michael Sherin 
+- JiongYu Zhang
+- Aditya Singh
